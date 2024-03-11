@@ -1,0 +1,42 @@
+{
+  "$schema": "./schema.json",
+  "keymaps": [
+    {
+      "key": {
+        "Char": "q"
+      },
+      "command": "Quit",
+      "modifiers": "CONTROL"
+    },
+    {
+      "key": "Backspace",
+      "command": "RemoveChar",
+      "modifiers": "NONE"
+    },
+    {
+      "key": "Enter",
+      "command": "InsertLine",
+      "modifiers": "NONE"
+    },
+    {
+      "key": "ArrowUp",
+      "command": "MoveCursorUp",
+      "modifiers": "NONE"
+    },
+    {
+      "key": "ArrowDown",
+      "command": "MoveCursorDown",
+      "modifiers": "NONE"
+    },
+    {
+      "key": "ArrowLeft",
+      "command": "MoveCursorLeft",
+      "modifiers": "NONE"
+    },
+    {
+      "key": "ArrowRight",
+      "command": "MoveCursorRight",
+      "modifiers": "NONE"
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EditorConfig",
+  "type": "object",
+  "required": [
+    "keymaps"
+  ],
+  "properties": {
+    "keymaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Keymap"
+      }
+    }
+  },
+  "definitions": {
+    "EditorCommand": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "InsertLine",
+            "RemoveChar",
+            "MoveCursorLeft",
+            "MoveCursorRight",
+            "MoveCursorUp",
+            "MoveCursorDown",
+            "MoveCursorStart",
+            "MoveCursorEnd",
+            "MoveCursorPageUp",
+            "MoveCursorPageDown",
+            "Quit",
+            "Save",
+            "Open",
+            "Find",
+            "FindNext",
+            "FindPrev",
+            "Undo",
+            "Redo"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "InsertChar"
+          ],
+          "properties": {
+            "InsertChar": {
+              "type": "string",
+              "maxLength": 1,
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "HandleKey"
+          ],
+          "properties": {
+            "HandleKey": {
+              "$ref": "#/definitions/KeyEvent"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "Mode"
+          ],
+          "properties": {
+            "Mode": {
+              "$ref": "#/definitions/Mode"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "KeyCode": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "Enter",
+            "Backspace",
+            "Delete",
+            "ArrowUp",
+            "ArrowDown",
+            "ArrowLeft",
+            "ArrowRight",
+            "CapsLock",
+            "ScrollLock",
+            "NumLock",
+            "PageUp",
+            "PageDown",
+            "PrintScreen",
+            "Pause",
+            "Menu",
+            "Home",
+            "End",
+            "Tab",
+            "Escape",
+            "Insert",
+            "Null"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "Char"
+          ],
+          "properties": {
+            "Char": {
+              "type": "string",
+              "maxLength": 1,
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "F"
+          ],
+          "properties": {
+            "F": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "KeyEvent": {
+      "type": "object",
+      "required": [
+        "key",
+        "modifiers"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/definitions/KeyCode"
+        },
+        "modifiers": {
+          "$ref": "#/definitions/KeyModifiers"
+        }
+      }
+    },
+    "KeyModifiers": {
+      "type": "string",
+      "enum": [
+        "SHIFT",
+        "CONTROL",
+        "ALT",
+        "SUPER",
+        "HYPER",
+        "META",
+        "NONE"
+      ]
+    },
+    "Keymap": {
+      "type": "object",
+      "required": [
+        "command",
+        "key",
+        "modifiers"
+      ],
+      "properties": {
+        "command": {
+          "$ref": "#/definitions/EditorCommand"
+        },
+        "key": {
+          "$ref": "#/definitions/KeyCode"
+        },
+        "modifiers": {
+          "$ref": "#/definitions/KeyModifiers"
+        }
+      }
+    },
+    "Mode": {
+      "type": "string",
+      "enum": [
+        "Normal",
+        "Insert",
+        "Visual"
+      ]
+    }
+  }
+}
