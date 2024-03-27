@@ -37,6 +37,28 @@
       "key": "ArrowRight",
       "command": "MoveCursorRight",
       "modifiers": "NONE"
+    },
+    {
+      "key": "Escape",
+      "command": {
+        "Mode": "Normal"
+      },
+      "modifiers": "NONE",
+      "when": {
+        "Mode": "Insert"
+      }
+    },
+    {
+      "key": {
+        "Char": "i"
+      },
+      "command": {
+        "Mode": "Insert"
+      },
+      "modifiers": "NONE",
+      "when": {
+        "Mode": "Normal"
+      }
     }
   ]
 }

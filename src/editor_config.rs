@@ -2,7 +2,7 @@ use std::fs;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{EditorCommand, KeyCode, KeyModifiers};
+use crate::types::{EditorCommand, KeyCode, KeyModifiers, When};
 use schemars::{schema_for, JsonSchema};
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
@@ -10,6 +10,7 @@ pub struct Keymap {
     pub key: KeyCode,
     pub command: EditorCommand,
     pub modifiers: KeyModifiers,
+    pub when: Option<When>,
 }
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
@@ -24,6 +25,7 @@ impl EditorConfig {
                 command: EditorCommand::Quit,
                 key: KeyCode::Char('q'),
                 modifiers: KeyModifiers::CONTROL,
+                when: None,
             }],
         }
     }

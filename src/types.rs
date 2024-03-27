@@ -35,6 +35,11 @@ pub enum CursorStyle {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
+pub enum When {
+    Mode(Mode),
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
 pub enum EditorCommand {
     InsertChar(char),
     InsertLine,

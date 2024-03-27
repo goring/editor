@@ -180,6 +180,16 @@
         },
         "modifiers": {
           "$ref": "#/definitions/KeyModifiers"
+        },
+        "when": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/When"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -189,6 +199,22 @@
         "Normal",
         "Insert",
         "Visual"
+      ]
+    },
+    "When": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "Mode"
+          ],
+          "properties": {
+            "Mode": {
+              "$ref": "#/definitions/Mode"
+            }
+          },
+          "additionalProperties": false
+        }
       ]
     }
   }

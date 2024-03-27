@@ -64,7 +64,7 @@ impl Editor {
         self.cursor.col = 0;
     }
 
-    fn execute_command(&mut self, command: EditorCommand) {
+    fn execute_command(&mut self, command: EditorCommand) -> anyhow::Result<()> {
         match command {
             EditorCommand::Quit => {
                 self.screen.teardown().unwrap();
@@ -108,15 +108,21 @@ impl Editor {
                     self.cursor.col = self.cursor.col.saturating_add(1);
                 }
             }
+            EditorCommand::Mode(mode) => {
+                self.change_mode(mode)?;
+                self.screen.flush()?;
+                debug!("Changing mode to {mode:?}");
+            }
             _ => {
                 todo!("Implement {command:?}")
             }
         }
+        Ok(())
     }
 
     pub fn run(&mut self, config: EditorConfig) -> anyhow::Result<()> {
+        self.change_mode(Mode::Insert)?;
         loop {
-            self.change_mode(Mode::Insert)?;
             self.screen.clear()?;
             self.screen.draw_rows(&self.doc)?;
             self.screen.move_cursor(self.cursor)?;
@@ -126,15 +132,20 @@ impl Editor {
                 match event {
                     EditorEvent::Key(event) => {
                         debug!("Comparing {event:?} to {config:?}");
-                        if let Some(keymap) = config.keymaps.iter().find(|keymap| {
-                            keymap.key == event.key && keymap.modifiers == event.modifiers
-                        }) {
-                            self.execute_command(keymap.command);
+                        if let Some(keymap) =
+                            config.keymaps.iter().find(|keymap| keymap.key == event.key)
+                        {
+                            self.execute_command(keymap.command)?;
                         } else {
+                            debug!("No keymap found {:?}", self.mode);
                             match event.key {
-                                KeyCode::Char(ch) => {
-                                    self.execute_command(EditorCommand::InsertChar(ch));
-                                }
+                                KeyCode::Char(ch) => match self.mode {
+                                    Mode::Insert => {
+                                        debug!("Inserting char because we are in insert mode!!");
+                                        self.execute_command(EditorCommand::InsertChar(ch))?;
+                                    }
+                                    _ => {}
+                                },
                                 _ => {}
                             }
                         }
