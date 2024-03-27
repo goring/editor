@@ -59,6 +59,46 @@
       "when": {
         "Mode": "Normal"
       }
+    },
+    {
+      "key": {
+        "Char": "l"
+      },
+      "command": "MoveCursorRight",
+      "modifiers": "NONE",
+      "when": {
+        "Mode": "Normal"
+      }
+    },
+    {
+      "key": {
+        "Char": "h"
+      },
+      "command": "MoveCursorLeft",
+      "modifiers": "NONE",
+      "when": {
+        "Mode": "Normal"
+      }
+    },
+    {
+      "key": {
+        "Char": "j"
+      },
+      "command": "MoveCursorDown",
+      "modifiers": "NONE",
+      "when": {
+        "Mode": "Normal"
+      }
+    },
+    {
+      "key": {
+        "Char": "k"
+      },
+      "command": "MoveCursorUp",
+      "modifiers": "NONE",
+      "when": {
+        "Mode": "Normal"
+      }
     }
   ]
 }
