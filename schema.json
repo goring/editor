@@ -20,7 +20,8 @@
           "type": "string",
           "enum": [
             "InsertLine",
-            "RemoveChar",
+            "BackspaceChar",
+            "DeleteChar",
             "MoveCursorLeft",
             "MoveCursorRight",
             "MoveCursorUp",
@@ -202,20 +203,15 @@
       ]
     },
     "When": {
-      "oneOf": [
-        {
-          "type": "object",
-          "required": [
-            "Mode"
-          ],
-          "properties": {
-            "Mode": {
-              "$ref": "#/definitions/Mode"
-            }
-          },
-          "additionalProperties": false
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "$ref": "#/definitions/Mode"
         }
-      ]
+      }
     }
   }
 }

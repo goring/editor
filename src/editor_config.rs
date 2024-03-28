@@ -43,7 +43,7 @@ impl EditorConfig {
         Ok(config)
     }
 
-    pub fn generate_schema(&self) -> String {
+    pub fn generate_schema() -> String {
         let schema = schema_for!(EditorConfig);
         serde_json::to_string_pretty(&schema).unwrap()
     }

@@ -16,9 +16,9 @@ fn main() -> anyhow::Result<()> {
     log::info!("Starting editor");
 
     let mut editor = editor::Editor::new()?;
-    let config = editor_config::EditorConfig::load("config.json")?;
-    let schema = config.generate_schema();
+    let schema = editor_config::EditorConfig::generate_schema();
     fs::write("schema.json", schema)?;
+    let config = editor_config::EditorConfig::load("config.json")?;
     editor.run(config)?;
     Ok(())
 }

@@ -10,13 +10,19 @@
     },
     {
       "key": "Backspace",
-      "command": "RemoveChar",
-      "modifiers": "NONE"
+      "command": "BackspaceChar",
+      "modifiers": "NONE",
+      "when": {
+        "mode": "Insert"
+      }
     },
     {
       "key": "Enter",
       "command": "InsertLine",
-      "modifiers": "NONE"
+      "modifiers": "NONE",
+      "when": {
+        "mode": "Insert"
+      }
     },
     {
       "key": "ArrowUp",
@@ -45,7 +51,7 @@
       },
       "modifiers": "NONE",
       "when": {
-        "Mode": "Insert"
+        "mode": "Insert"
       }
     },
     {
@@ -57,7 +63,7 @@
       },
       "modifiers": "NONE",
       "when": {
-        "Mode": "Normal"
+        "mode": "Normal"
       }
     },
     {
@@ -67,7 +73,7 @@
       "command": "MoveCursorRight",
       "modifiers": "NONE",
       "when": {
-        "Mode": "Normal"
+        "mode": "Normal"
       }
     },
     {
@@ -77,7 +83,7 @@
       "command": "MoveCursorLeft",
       "modifiers": "NONE",
       "when": {
-        "Mode": "Normal"
+        "mode": "Normal"
       }
     },
     {
@@ -87,7 +93,7 @@
       "command": "MoveCursorDown",
       "modifiers": "NONE",
       "when": {
-        "Mode": "Normal"
+        "mode": "Normal"
       }
     },
     {
@@ -97,7 +103,33 @@
       "command": "MoveCursorUp",
       "modifiers": "NONE",
       "when": {
-        "Mode": "Normal"
+        "mode": "Normal"
+      }
+    },
+    {
+      "key": {
+        "Char": "x"
+      },
+      "command": "DeleteChar",
+      "modifiers": "NONE",
+      "when": {
+        "mode": "Normal"
+      }
+    },
+    {
+      "key": "Enter",
+      "command": "MoveCursorDown",
+      "modifiers": "NONE",
+      "when": {
+        "mode": "Normal"
+      }
+    },
+    {
+      "key": "Backspace",
+      "command": "MoveCursorLeft",
+      "modifiers": "NONE",
+      "when": {
+        "mode": "Normal"
       }
     }
   ]

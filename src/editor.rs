@@ -1,7 +1,7 @@
 use crate::{
     editor_config::EditorConfig,
     screen::Screen,
-    types::{Cursor, CursorStyle, EditorCommand, EditorEvent, KeyCode, Mode},
+    types::{Cursor, CursorStyle, EditorCommand, EditorEvent, KeyCode, Mode, When},
 };
 use log::debug;
 use std::time::Duration;
@@ -35,7 +35,17 @@ impl Editor {
         Ok(())
     }
 
-    fn remove_char(&mut self, cursor: Option<Cursor>) {
+    fn delete_char(&mut self, cursor: Option<Cursor>) {
+        let cursor = cursor.unwrap_or(self.cursor.clone());
+        if cursor.col < self.doc[cursor.row as usize].len() as u16 {
+            self.doc[cursor.row as usize].remove(cursor.col as usize);
+        } else if cursor.row < self.doc.len() as u16 - 1 {
+            let row = self.doc.remove(cursor.row as usize + 1);
+            self.doc[cursor.row as usize].push_str(&row);
+        }
+    }
+
+    fn backspace_char(&mut self, cursor: Option<Cursor>) {
         let cursor = cursor.unwrap_or(self.cursor.clone());
         if cursor.col > 0 {
             self.doc[cursor.row as usize].remove(cursor.col as usize - 1);
@@ -66,6 +76,9 @@ impl Editor {
 
     fn execute_command(&mut self, command: EditorCommand) -> anyhow::Result<()> {
         match command {
+            EditorCommand::DeleteChar => {
+                self.delete_char(None);
+            }
             EditorCommand::Quit => {
                 self.screen.teardown().unwrap();
                 std::process::exit(0);
@@ -73,8 +86,8 @@ impl Editor {
             EditorCommand::InsertChar(c) => {
                 self.insert_char(c, None);
             }
-            EditorCommand::RemoveChar => {
-                self.remove_char(None);
+            EditorCommand::BackspaceChar => {
+                self.backspace_char(None);
             }
             EditorCommand::InsertLine => {
                 self.insert_line(None);
@@ -131,17 +144,33 @@ impl Editor {
             if let Some(event) = self.screen.poll(Duration::from_millis(300))? {
                 match event {
                     EditorEvent::Key(event) => {
-                        debug!("Comparing {event:?} to {config:?}");
-                        if let Some(keymap) =
-                            config.keymaps.iter().find(|keymap| keymap.key == event.key)
-                        {
+                        // Check if the keymap is captured by a configuration
+                        let captured = if let Some(keymap) = config.keymaps.iter().find(|keymap| {
+                            if keymap.key == event.key {
+                                if let Some(when) = keymap.when {
+                                    debug!(
+                                        "Comparing modes {:?} {:?} for keymap {:?}",
+                                        keymap.when, self.mode, keymap.key
+                                    );
+                                    when.evaluate(When { mode: self.mode })
+                                } else {
+                                    true
+                                }
+                            } else {
+                                false
+                            }
+                        }) {
                             self.execute_command(keymap.command)?;
+                            true
                         } else {
+                            false
+                        };
+                        if !captured {
                             debug!("No keymap found {:?}", self.mode);
                             match event.key {
                                 KeyCode::Char(ch) => match self.mode {
                                     Mode::Insert => {
-                                        debug!("Inserting char because we are in insert mode!!");
+                                        debug!("Inserting char {:?}", ch);
                                         self.execute_command(EditorCommand::InsertChar(ch))?;
                                     }
                                     _ => {}

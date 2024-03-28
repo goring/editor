@@ -35,8 +35,22 @@ pub enum CursorStyle {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
-pub enum When {
-    Mode(Mode),
+pub struct When {
+    pub mode: Mode,
+}
+impl When {
+    pub fn evaluate(&self, when: When) -> bool {
+        self.compare_mode(when.mode)
+    }
+
+    pub fn compare_mode(&self, mode: Mode) -> bool {
+        match (self.mode, mode) {
+            (Mode::Normal, Mode::Normal) => true,
+            (Mode::Insert, Mode::Insert) => true,
+            (Mode::Visual, Mode::Visual) => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
@@ -44,7 +58,8 @@ pub enum EditorCommand {
     InsertChar(char),
     InsertLine,
     HandleKey(KeyEvent),
-    RemoveChar,
+    BackspaceChar,
+    DeleteChar,
     MoveCursorLeft,
     MoveCursorRight,
     MoveCursorUp,

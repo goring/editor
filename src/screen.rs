@@ -137,10 +137,10 @@ impl Screen {
     pub fn teardown(&mut self) -> anyhow::Result<()> {
         terminal::disable_raw_mode()?;
         self.set_cursor_style(CursorStyle::DefaultUserShape)?;
-        // #[cfg(feature = "use_alternate_screen")]
-        // {
-        //     execute!(&self.stdout, terminal::LeaveAlternateScreen)?;
-        // };
+        #[cfg(feature = "use_alternate_screen")]
+        {
+            execute!(&self.stdout, terminal::LeaveAlternateScreen)?;
+        };
         Ok(())
     }
 }
