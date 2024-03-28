@@ -131,6 +131,16 @@
       "when": {
         "mode": "Normal"
       }
+    },
+    {
+      "key": {
+        "Char": "o"
+      },
+      "command": "InsertLine",
+      "modifiers": "NONE",
+      "when": {
+        "mode": "Normal"
+      }
     }
   ]
 }

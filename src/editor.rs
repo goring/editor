@@ -1,7 +1,7 @@
 use crate::{
-    editor_config::EditorConfig,
+    editor_config::{EditorConfig, Keymap},
     screen::Screen,
-    types::{Cursor, CursorStyle, EditorCommand, EditorEvent, KeyCode, Mode, When},
+    types::{Cursor, CursorStyle, EditorCommand, EditorEvent, KeyCode, KeyEvent, Mode, When},
 };
 use log::debug;
 use std::time::Duration;
@@ -134,54 +134,80 @@ impl Editor {
     }
 
     pub fn run(&mut self, config: EditorConfig) -> anyhow::Result<()> {
+        // Start in Insert mode
         self.change_mode(Mode::Insert)?;
-        loop {
-            self.screen.clear()?;
-            self.screen.draw_rows(&self.doc)?;
-            self.screen.move_cursor(self.cursor)?;
-            self.screen.flush()?;
 
-            if let Some(event) = self.screen.poll(Duration::from_millis(300))? {
+        loop {
+            // Clear the screen, draw the document, and move the cursor
+            self.update_screen()?;
+
+            // Poll for events with a timeout of 300 milliseconds
+            if let Some(event) = self.poll_event(Duration::from_millis(300))? {
                 match event {
-                    EditorEvent::Key(event) => {
-                        // Check if the keymap is captured by a configuration
-                        let captured = if let Some(keymap) = config.keymaps.iter().find(|keymap| {
-                            if keymap.key == event.key {
-                                if let Some(when) = keymap.when {
-                                    debug!(
-                                        "Comparing modes {:?} {:?} for keymap {:?}",
-                                        keymap.when, self.mode, keymap.key
-                                    );
-                                    when.evaluate(When { mode: self.mode })
-                                } else {
-                                    true
-                                }
-                            } else {
-                                false
-                            }
-                        }) {
+                    EditorEvent::Key(key_event) => {
+                        // Check if the key is captured by a keymap in the configuration
+                        if let Some(keymap) = self.find_matching_keymap(&config, &key_event) {
+                            // Execute the command associated with the keymap
                             self.execute_command(keymap.command)?;
-                            true
                         } else {
-                            false
-                        };
-                        if !captured {
-                            debug!("No keymap found {:?}", self.mode);
-                            match event.key {
-                                KeyCode::Char(ch) => match self.mode {
-                                    Mode::Insert => {
-                                        debug!("Inserting char {:?}", ch);
-                                        self.execute_command(EditorCommand::InsertChar(ch))?;
-                                    }
-                                    _ => {}
-                                },
-                                _ => {}
-                            }
+                            // If the key is not captured by a keymap
+                            self.handle_unmapped_key(&key_event)?;
                         }
                     }
                 }
             }
         }
+    }
+
+    fn update_screen(&mut self) -> anyhow::Result<()> {
+        self.screen.clear()?;
+        self.screen.draw_rows(&self.doc)?;
+        self.screen.move_cursor(self.cursor)?;
+        self.screen.flush()?;
+        Ok(())
+    }
+
+    fn poll_event(&mut self, duration: Duration) -> anyhow::Result<Option<EditorEvent>> {
+        // Poll for events with the specified duration
+        self.screen.poll(duration)
+    }
+
+    fn find_matching_keymap<'a>(
+        &'a self,
+        config: &'a EditorConfig,
+        key_event: &KeyEvent,
+    ) -> Option<&Keymap> {
+        // Iterate over keymaps in the configuration and find a matching keymap
+        config
+            .keymaps
+            .iter()
+            .find(move |keymap| self.matches_keymap(keymap, key_event))
+    }
+
+    fn matches_keymap(&self, keymap: &Keymap, key_event: &KeyEvent) -> bool {
+        // Check if the keymap matches the event key and mode
+        keymap.key == key_event.key && self.matches_mode(&keymap.when)
+    }
+
+    fn matches_mode(&self, when: &Option<When>) -> bool {
+        // Check if the mode matches the condition
+        when.map_or(true, |condition| {
+            condition.evaluate(When { mode: self.mode })
+        })
+    }
+
+    fn handle_unmapped_key(&mut self, key_event: &KeyEvent) -> anyhow::Result<()> {
+        // Handle keys that are not captured by any keymap
+        match key_event.key {
+            KeyCode::Char(ch) => {
+                if let Mode::Insert = self.mode {
+                    // Insert the character in Insert mode
+                    self.execute_command(EditorCommand::InsertChar(ch))?;
+                }
+            }
+            _ => {}
+        }
+        Ok(())
     }
 }
 
